@@ -1,0 +1,40 @@
+<form id="form1" action="/m3-emv-trn/exm/signUp#anchor" method="post" autocomplete="off">
+    <input type="hidden" id="method" name="method" value="add">
+    <input id="secDateStr" name="secDateStr" type="hidden" value="{test_date}">
+    <input id="secId" name="secId" type="hidden" value="{sec_id}">
+    <input id="divId" name="divId" type="hidden" value="{div_id}">
+    <input id="dmvNo" name="dmvNo" type="hidden" value="{dmv_no_code}">
+    <input id="licenseTypeCode" name="licenseTypeCode" type="hidden" value="{license_type_code}">
+    <input id="otp" name="otp" type="hidden" value="">
+    <div class="caption_std">報考人資料</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form_table2">
+        <tbody>
+            <tr>
+                <th align="right" width="30%">身分證字號 ID No.：</th>
+                <td align="left"><input id="idNo" name="idNo" uppercase="true" class="ipt_std form_tiny" type="text" value="{id_no}" maxlength="10"> </td>
+            </tr>
+            <tr>
+                <th align="right">出生年月日 Birthday：</th>
+                <td align="left">
+                    <input type="text" name="birthdayStr" id="birthdayStr" value="{birthday}" size="10" class="ipt_std form_tiny hasDatepicker" maxlength="7">
+                </td>
+            </tr>
+            <tr>
+                <th align="right">姓名 Name：</th>
+                <td align="left"><input id="name" name="name" class="ipt_std form_tiny" type="text" value="{name}" maxlength="10"> </td>
+            </tr>
+            <tr>
+                <th align="right">聯絡電話/手機 Phone No.：</th>
+                <td align="left"><input id="contactTel" name="contactTel" class="ipt_std form_tiny" type="text" value="{phone_number}" maxlength="20"> </td>
+            </tr>
+            <tr>
+                <th align="right">Email：</th>
+                <td align="left"><input id="email" name="email" class="ipt_std form_tiny" type="text" value="{email}" maxlength="50"> </td>
+            </tr>
+            <tr>
+                <td class="align_c" colspan="2"><a href="#anchor" class="std_btn" onclick="add()"> 報名 SignUp</a> <a href="/m3-emv-trn/exm/locations">回「查詢場次 Reinquiry」</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>

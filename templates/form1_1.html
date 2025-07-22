@@ -1,0 +1,32 @@
+<form id="form1" action="/m3-emv-trn/exm/signUp" method="post" autocomplete="off">
+    <input type="hidden" id="method" name="method" value="preAdd">
+    <input id="secDateStr" name="secDateStr" type="hidden" value="{test_date}">
+    <input id="secId" name="secId" type="hidden" value="{sec_id}">
+    <input id="divId" name="divId" type="hidden" value="{div_id}">
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form_table2">
+        <tbody>
+            <tr>
+                <th align="right" width="30%">報考照類 Type of Test：</th>
+                <td align="left">
+                    <select id="licenseTypeCode" name="licenseTypeCode" class="sel_std">
+                        <option value="{license_type_code}" selected="selected">{license_type_name}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th align="right">考試地點 Place of Test：</th>
+                <td align="left">
+                    <select id="dmvNo" name="dmvNo" class="sel_std" onchange="trnTableClear();">
+                        <option value="{dmv_no_code}" selected="selected">{dmv_no_name}</option>
+                    </select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div align="center">
+        <a href="#anchor" class="std_btn" onclick="query();"> <img src="/m3/images/btn_icon_search.gif" align="absmiddle" border="0" name="imgSearchIcon"> 查詢場次 Search
+        </a>
+    </div>
+</form>
