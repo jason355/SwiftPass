@@ -7,6 +7,7 @@ venv/
 *.log
 *.sqlite3
 
+download_files/
 # Built executables
 dist/
 build/
