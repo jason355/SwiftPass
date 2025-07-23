@@ -11,7 +11,7 @@ import multiprocessing
 
 class LicenseAgent():
     def __init__(self):
-        self.configFilePath = "./res/config.json"
+        self.configFilePath = "config.json"
         self.TypeOfTest = {
             "普通重型機車":"3",
             "普通輕型機車 (50cc 以下)":"5",
