@@ -81,7 +81,7 @@ class LicenseAgent():
             return False
         
     def print_swiftpass_banner(self):
-        # (將上面的 print_swiftpass_banner 函數完整複製到這裡，或者從一個 helper 檔案導入)
+      
         S = [" ... ", ".    ", " ... ", "    .", ".... "]
         W = [".   .", ".   .", ".   .", ". . .", " . . "]
         I = [".....", "  .  ", "  .  ", "  .  ", "....."]

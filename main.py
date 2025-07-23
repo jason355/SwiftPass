@@ -8,10 +8,10 @@ if __name__ == "__main__":
         Bot = LicenseAgent()
         url = "https://www.mvdis.gov.tw/m3-emv-trn/exm/locations#anchor&gsc.tab=0"
         triggerDatetime = datetime.combine(date.today()+timedelta(days=1), ti(hour=00, minute=00, second=00))
-        multiprocessing.freeze_support()
+        multiprocessing.freeze_support() 
 
         while True:
-            task = input("請輸入工作項目\nA:修改資料\nB:單視窗執行\nC:雙視窗執行\n>") #請輸入工作項目\nA:修改資料\nB:啟動程序\nC:手動送出請求\nD:多進程執行\nE:v2\n>
+            task = input("請輸入工作項目\nA:修改資料\nB:單視窗執行\nC:雙視窗執行\n>") 
             if task == "A":
                 Bot.editConfig()
             elif task == "B":
