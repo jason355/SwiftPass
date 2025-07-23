@@ -1,9 +1,9 @@
 from datetime import date, timedelta, datetime
-from selenium.webdriver.support.ui import WebDriverWait
+
+from selenium.common.exceptions import TimeoutException, WebDriverException
+from seleniumbase import Driver
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
-from selenium.common.exceptions import TimeoutException
-from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 import time, os, json, re, sys
 import multiprocessing
@@ -49,7 +49,7 @@ class LicenseAgent():
             "phone_number":"",
             "email":""
         }
-
+        self.max_retries = 100
 
         self.setup()
 
@@ -332,32 +332,23 @@ class LicenseAgent():
 
 
 
+    # --- Driver Setup with SeleniumBase ---
     def setup_driver(self):
-        options = webdriver.ChromeOptions()
-        options.add_experimental_option("detach", True)
-        options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option("useAutomationExtension", False)
-
-        #options.add_argument(argument='--headless')  # 無頭模式，不顯示瀏覽器界面
-
-        # --- IMPORTANT: Specify ChromeDriver path explicitly ---
-        if getattr(sys, 'frozen', False): # Check if running as a PyInstaller frozen executable
-            # For PyInstaller: ChromeDriver is expected to be in the temporary _MEIPASS folder
-            # On Windows: chromedriver.exe
-            # On macOS/Linux: chromedriver (no .exe)
-            driver_executable_name = "chromedriver.exe" if sys.platform.startswith('win') else "chromedriver"
-            driver_path = os.path.join(sys._MEIPASS, driver_executable_name)
-
-            service = Service(driver_path)
-            driver = webdriver.Chrome(service=service, options=options)
-
-            
-        else:
-            driver = webdriver.Chrome(options=options)
-        return driver
-        
-
+        try:
+            driver = Driver(
+                browser="chrome",
+                headless=False, # Set to True if you want to run without a visible browser UI
+                uc=False,        # Use undetected-chromedriver for stealth
+                agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36", # Custom user agent
+            )
+            return driver
+        except WebDriverException as e:
+            print(f"\n[ERROR] Failed to obtain Chrome driver using SeleniumBase.")
+            print(f"Possible causes: No Chrome browser installed, network issues, or misconfigured Chrome binary location.")
+            print(f"Detailed error: {e}")
+            print("\nPlease ensure Google Chrome is installed and your internet connection is stable.")
+            print("You might also try running: `python -m seleniumbase install chromedriver` in your terminal.")
+            return None # Return None if driver setup fails
 
 
 
@@ -431,21 +422,22 @@ class LicenseAgent():
             try:
                 # 等待 body 元素出現 (基本頁面加載完成)
                 WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                print("頁面 body 已加載。")
+                print(f"頁面 body 已加載。")
 
                 # 等待 jQuery 加載完成。這裡會執行一個 JavaScript 檢查，判斷 window.jQuery 是否存在。
                 # 這是最直接判斷 jQuery 是否就緒的方法。
                 WebDriverWait(driver, 5).until(
                     lambda d: d.execute_script("return typeof jQuery != 'undefined' && jQuery.active == 0")
                 )
-                print("jQuery 已加載且沒有活躍的 AJAX 請求。")
+                print(f"jQuery 已加載且沒有活躍的 AJAX 請求。")
 
                 WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.ID, "form1"))
                 )
 
+
             except TimeoutException:
-                print("警告: 頁面加載或 jQuery 加載超時。正在重新啟動")
+                print(f"警告: 頁面加載或 jQuery 加載超時。正在重新啟動")
                 return False
             # 使用 JavaScript 來移除舊的 form1 並插入新的 HTML
             # 我們會找到 form1 的父元素，然後用新的 HTML 替換舊的 form1
@@ -480,9 +472,8 @@ class LicenseAgent():
                 try:
                     # 等待 jQuery 加載完成。這裡會執行一個 JavaScript 檢查，判斷 window.jQuery 是否存在。
                     # 這是最直接判斷 jQuery 是否就緒的方法。
-                    WebDriverWait(driver, 5).until(
-                        EC.presence_of_element_located((By.ID, "form1"))
-                    )
+                    driver.wait_for_element("#form1", timeout=5)
+
                 except TimeoutException:
                     print("警告: 頁面加載超時。請手動輸入")
                 else:
@@ -510,34 +501,57 @@ class LicenseAgent():
             print("Browser closed.")
 
 
-    def launch_for_mutihead(self, url, process_name, offset_ms, triggerDatetime):
+    def launch_for_multihead(self, url, process_name, offset_ms, triggerDatetime):
         print(f"=====啟動{process_name}=====")
         try:
-            driver = self.setup_driver()
-            driver.get(url)
-            # 等待 form1 元素出現
-            try:
-                # 等待 body 元素出現 (基本頁面加載完成)
-                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-                print(f"[{process_name}] 頁面 body 已加載。")
+            current_retries = 0
+            while current_retries < self.max_retries:
+                driver = None # 每次重試都重置 driver
+                try:
+                    # 設置驅動程式
+                    driver = self.setup_driver()
+                    if not driver:
+                        print(f"[{process_name}] 驅動程式設定失敗，跳過本次嘗試。")
+                        current_retries += 1
+                        time.sleep(0.5) # 等待一下再重試
+                        continue # 進入下一次重試迴圈
 
-                # 等待 jQuery 加載完成。這裡會執行一個 JavaScript 檢查，判斷 window.jQuery 是否存在。
-                # 這是最直接判斷 jQuery 是否就緒的方法。
-                WebDriverWait(driver, 5).until(
-                    lambda d: d.execute_script("return typeof jQuery != 'undefined' && jQuery.active == 0")
-                )
-                print(f"[{process_name}] jQuery 已加載且沒有活躍的 AJAX 請求。")
+                    # 開啟網頁
+                    driver.open(url)
+                    print(f"[{process_name}] 頁面已加載。")
 
-                WebDriverWait(driver, 5).until(
-                    EC.presence_of_element_located((By.ID, "form1"))
-                )
+                    # 等待必要的元素和 jQuery
+                    try:
+                        # 等待 body 元素出現 (基本頁面加載完成)
+                        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+                        print(f"[{process_name}] 頁面 body 已加載。")
 
-            except TimeoutException:
-                print(f"[{process_name}] 警告: 頁面加載或 jQuery 加載超時。正在重新啟動")
-                return False
-            # 使用 JavaScript 來移除舊的 form1 並插入新的 HTML
-            # 我們會找到 form1 的父元素，然後用新的 HTML 替換舊的 form1
+                        # 等待 jQuery 加載完成。這裡會執行一個 JavaScript 檢查，判斷 window.jQuery 是否存在。
+                        # 這是最直接判斷 jQuery 是否就緒的方法。
+                        WebDriverWait(driver, 5).until(
+                            lambda d: d.execute_script("return typeof jQuery != 'undefined' && jQuery.active == 0")
+                        )
+                        print(f"[{process_name}] jQuery 已加載且沒有活躍的 AJAX 請求。")
 
+                        WebDriverWait(driver, 5).until(
+                            EC.presence_of_element_located((By.ID, "form1"))
+                        )
+                        
+                    except TimeoutException:
+                        print(f"[{process_name}] 警告: 頁面加載或 form1 加載超時。第 {current_retries + 1}/{self.max_retries} 次重試。")
+                        current_retries += 1
+                        driver.quit() # 失敗時立即關閉 driver
+                        time.sleep(0.5) # 給瀏覽器一點時間關閉和系統釋放資源
+                        continue # 進入下一次重試迴圈
+
+                except Exception as page_load_e:
+                    print(f"[{process_name}] 頁面加載時發生意外錯誤: {page_load_e}。第 {current_retries + 1}/{self.max_retries} 次重試。")
+                    current_retries += 1
+                    if driver: driver.quit()
+                    time.sleep(0.5)
+                    continue
+                else:
+                    break
 
 
             script = f"""
@@ -568,9 +582,8 @@ class LicenseAgent():
                 try:
                     # 等待 jQuery 加載完成。這裡會執行一個 JavaScript 檢查，判斷 window.jQuery 是否存在。
                     # 這是最直接判斷 jQuery 是否就緒的方法。
-                    WebDriverWait(driver, 5).until(
-                        EC.presence_of_element_located((By.ID, "form1"))
-                    )
+                    driver.wait_for_element("#form1", timeout=5)
+
                 except TimeoutException:
                     print(f"[{process_name}] 警告: 頁面加載超時。請手動輸入")
                 else:
@@ -601,7 +614,7 @@ class LicenseAgent():
 
 
 
-    def mutihead_launch(self, url, triggerDatetime):
+    def multihead_launch(self, url, triggerDatetime):
         print("=====啟動資料確認=====")
         print(f"現在時刻:{datetime.now()}\n📅考試日期:{self.getTestDate()}\n預計觸發時間:{triggerDatetime}")
         for i, t in enumerate(self.configDict):
@@ -616,7 +629,7 @@ class LicenseAgent():
         processes = []
         for offset in trigger_offsets:
             process_name = f"DriverProcess:{offset}"
-            p = multiprocessing.Process(target=self.launch_for_mutihead, name=process_name, args=(url, process_name, offset, triggerDatetime))
+            p = multiprocessing.Process(target=self.launch_for_multihead, name=process_name, args=(url, process_name, offset, triggerDatetime))
             processes.append(p)
             p.start()
         

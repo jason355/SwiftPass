@@ -19,7 +19,7 @@ if __name__ == "__main__":
                 while not ack:
                     Bot.launch(url, 10, triggerDatetime)
             elif task == "C":
-                Bot.mutihead_launch(url, triggerDatetime)
+                Bot.multihead_launch(url, triggerDatetime)
             else:
                 sys.exit()
     except Exception as e:
