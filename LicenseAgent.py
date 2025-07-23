@@ -11,7 +11,7 @@ import multiprocessing
 
 class LicenseAgent():
     def __init__(self):
-        self.configFilePath = "./config.json"
+        self.configFilePath = "./res/config.json"
         self.TypeOfTest = {
             "普通重型機車":"3",
             "普通輕型機車 (50cc 以下)":"5",
@@ -66,7 +66,7 @@ class LicenseAgent():
         if getattr(sys, 'frozen', False):
             path = os.path.join(sys._MEIPASS, path)
         else:
-            path = os.path.join(os.path.dirname(__file__), path)
+            path = os.path.join(os.path.dirname(__file__), "res", path)
 
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
