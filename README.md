@@ -1,5 +1,9 @@
 # SwiftPass
 
+<img width="675" height="159" alt="SwiftPass" src="https://github.com/user-attachments/assets/bb9926d0-529e-4318-bf1b-e7e3bf9b18d8" />
+
+
+
 本軟體旨在自動化報考駕照的流程，透過精準計時和加速提交，提高您在熱門考場或名額有限時段成功報考的機會。
 > [!IMPORTANT]
 > 請先參見[免責聲明](#免責聲明)，閱讀完內容並且同意後再進行使用。
@@ -37,7 +41,9 @@
 ## 下載
 請點選右側[release](https://github.com/jason355/SwiftPass/releases/)頁面，點選Assets下方`SwiftPass <version>.7z`下載。
 
-解壓縮`SwiftPass <version>.7z`後進入資料夾會看到`main.exe`執行檔與`_internal`資料夾，雙擊`main.exe`即可啟動程式。
+- 解壓縮`SwiftPass <version>.7z`
+- 進入資料夾會看到`main.exe`與`_internal`資料夾
+- 雙擊`main.exe`即可啟動程式。
 
 
 ## 說明
@@ -51,12 +57,10 @@
 - `A 修改資料` 
 
     輸入A並按下ENTER後，你會看到1-9個資料選項，輸入需要修改的項目代碼後按下ENTER送出。若誤按到`A`可不輸入任何數字直接按下ENTER跳出此選項。
+#### [圖1] A 修改資料範例。
+<img src="./images/choice_A.png" alt="choice_A" width="60%">
 
-<figure style="text-align: center;">    <img src="./images/choice_A.png" alt="choice_A" width="50%" height="50%">
-    <figcaption style="font-size: 1em;">
-        [圖1] A 修改資料範例。
-    </figcaption>
-</figure>
+
 
 - `B:單視窗執行` 
   
@@ -64,30 +68,22 @@
     送出請求後，會跳轉至另一網頁，若正確載入(見下圖3)則會自動填入預設資料並且提交，但若未正確載入則需手動輸入資料(包含身分證、生日、姓名、手機號碼、email)。
 
 
-<figure style="text-align: center;">
-  <img src="./images/mvdis_screen_v2.png" alt="example image" width="50%" height="50%">
-  <figcaption style="font-size: 1em;">
-    [圖2] 初始畫面
-  </figcaption>
-</figure>
+#### [圖2] 初始畫面
+<img src="./images/mvdis_screen_v2.png" alt="example image" width="60%">
 
 
-<figure style="text-align: center;">
+
+#### [圖3] 正確載入畫面
   <img src="./images/mvdis_screen_v2_2.png" alt="example image" width="40%" height="40%">
-  <figcaption>
-    [圖3] 正確載入畫面
-  </figcaption> 
-</figure>
-
 
 - `C 雙視窗執行`
   
     原則上與單視窗執行相同，不過此選項會開兩個視窗`DriverProgress:10`與`DriverProgress:-10`，分別提前10毫秒與延後10毫秒送出請求，若電腦性能允許請以此方法為主。(建議依據瀏覽器回應時間判斷是否使用)
-    > [!NOTE]
-    > 建議硬體規格
-    >   - 處理器:Intel i3 (第八代或更新) 或  AMD Ryzen 5 (第 3 代或更新) 或更高階處理器
-    >   - 記憶體 4 GB 以上
-    >   - 有線網路
+> [!NOTE]
+> 建議硬體規格
+>   - 處理器:Intel i3 (第八代或更新) 或  AMD Ryzen 5 (第 3 代或更新) 或更高階處理器
+>   - 記憶體 4 GB 以上
+>   - 有線網路
 
 
 
@@ -122,12 +118,8 @@
   1 代表上午，2 代表下午
 ### 組別
   請至[監理站考照報名](https://www.mvdis.gov.tw/m3-emv-trn/exm/locations#gsc.tab=0)選擇您的考試項目、並任選一天作為考試日期(建議選擇平日)，最後選擇考場後找到下方欄位之組別代號，通常有兩個，一個給重考、註銷者，另一個給初考生
- <figure style="text-align: center;">
+#### [圖4] 上下午場與組別確認
   <img src="./images/group.png" alt="example image" width="70%">
-  <figcaption>
-    [圖4] 上下午場與組別確認
-  </figcaption> 
-</figure>
 
 ### 考試地點代碼
   請參考下方對應表，找到您的考場代號
